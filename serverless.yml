@@ -1,0 +1,45 @@
+service:
+  name: mails-service
+
+plugins:
+  - serverless-bundle
+  - serverless-pseudo-parameters
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  memorySize: 256
+  stage: ${opt:stage, 'dev'}
+  region: us-east-1
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:PutItem
+      Resource:
+        - arn:aws:dynamodb:#{AWS::Region}:#{AWS::AccountId}:table/EmailsTable
+
+resources:
+  Resources:
+    AuctionsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: EmailsTable
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+  
+functions:
+  createNotiEmail:
+    handler: src/handlers/createNotiEmail.handler
+    events:
+      - http:
+          method: POST
+          path: /mail
+
+custom: 
+  bundle:
+    linting: false
