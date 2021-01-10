@@ -1,5 +1,7 @@
 import { v4 as uuid } from 'uuid';
 import AWS from 'aws-sdk';
+import commonMiddleware from '../lib/commonMiddleware';
+import createError from "http-errors";
 
 const dynamodb = new AWS.DynamoDB.DocumentClient();
 
@@ -15,11 +17,15 @@ async function createNotiEmail(event, context) {
     modifiedAt: now.toISOString
   };
 
-  await dynamodb.put({
-    TableName: 'EmailsTable',
-    Item: notiEmail,
-  }).promise();
-
+  try {
+    await dynamodb.put({
+      TableName: process.env.EMAILS_TABLE_NAME,
+      Item: notiEmail,
+    }).promise();
+  } catch (error) {
+    console.error(error);
+    throw new createError.InternalServerError(error);
+  }
 
   return {
     statusCode: 200,
@@ -27,6 +33,6 @@ async function createNotiEmail(event, context) {
   };
 }
 
-export const handler = createNotiEmail;
+export const handler = commonMiddleware(createNotiEmail)
 
 

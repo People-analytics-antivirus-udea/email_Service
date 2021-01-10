@@ -11,35 +11,49 @@ provider:
   memorySize: 256
   stage: ${opt:stage, 'dev'}
   region: us-east-1
+  environment:
+    EMAILS_TABLE_NAME: ${self:custom.EmailsTable.name}
   iamRoleStatements:
-    - Effect: Allow
-      Action:
-        - dynamodb:PutItem
-      Resource:
-        - arn:aws:dynamodb:#{AWS::Region}:#{AWS::AccountId}:table/EmailsTable
+    - ${file(iam/EmailsTableIAM.yml):EmailsTableIAM}
 
 resources:
   Resources:
-    AuctionsTable:
-      Type: AWS::DynamoDB::Table
-      Properties:
-        TableName: EmailsTable
-        BillingMode: PAY_PER_REQUEST
-        AttributeDefinitions:
-          - AttributeName: id
-            AttributeType: S
-        KeySchema:
-          - AttributeName: id
-            KeyType: HASH
-  
+    EmailsTable: ${file(resources/EmailsTable.yml):EmailsTable}
+
 functions:
   createNotiEmail:
     handler: src/handlers/createNotiEmail.handler
     events:
       - http:
           method: POST
-          path: /mail
+          path: /mail/
 
-custom: 
+  deleteNotiEmail:
+    handler: src/handlers/deleteNotiEmailById.handler
+    events:
+      - http:
+          method: DELETE
+          path: /mail/delete/{id}
+
+
+  changeNotiEmail:
+    handler: src/handlers/changeNotiEmail.handler
+    events:
+      - http:
+          method: PUT
+          path: /mail/change/{id}
+
+  getNotiEmailByUni:
+    handler: src/handlers/getNotiEmailByUni.handler
+    events:
+      - http:
+          method: GET
+          path: /mail/list/{prefix_uni}
+
+
+custom:
+  EmailsTable:
+    name: !Ref EmailsTable
+    arn: !GetAtt EmailsTable.Arn
   bundle:
     linting: false
