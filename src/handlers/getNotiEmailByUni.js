@@ -5,7 +5,7 @@ import createError from "http-errors";
 const dynamodb = new AWS.DynamoDB.DocumentClient();
 
 async function getNotiEmailByUni(event, context) {
-  const { prefix_uni } = event.pathParameters;
+  const { prefix_uni } = event.queryStringParameters;
 
   let emails;
 
@@ -13,8 +13,8 @@ async function getNotiEmailByUni(event, context) {
     const result = await dynamodb
       .scan({
         TableName: process.env.EMAILS_TABLE_NAME,
-        FilterExpression: 'university = :this_university',
-        ExpressionAttributeValues : { ':this_university' : prefix_uni}
+        FilterExpression: 'u_prefix = :this_u_prefix',
+        ExpressionAttributeValues : { ':this_u_prefix' : prefix_uni}
       })
       .promise();
 
@@ -27,6 +27,10 @@ async function getNotiEmailByUni(event, context) {
   return {
     statusCode: 200,
     body: JSON.stringify(emails),
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Credentials': true,
+    },
   };
 }
 

@@ -6,13 +6,14 @@ import createError from "http-errors";
 const dynamodb = new AWS.DynamoDB.DocumentClient();
 
 async function createNotiEmail(event, context) {
-  const { university, email } = JSON.parse(event.body);
+  const { university, email, u_prefix } = JSON.parse(event.body);
   const now = new Date();
 
   const notiEmail = {
     id: uuid(),
     university,
     email,
+    u_prefix,
     createdAt: now.toISOString,
     modifiedAt: now.toISOString
   };
@@ -30,6 +31,10 @@ async function createNotiEmail(event, context) {
   return {
     statusCode: 200,
     body: JSON.stringify(notiEmail),
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Credentials': true,
+    },
   };
 }
 

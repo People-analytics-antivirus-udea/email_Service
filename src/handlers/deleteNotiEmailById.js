@@ -5,7 +5,7 @@ import createError from "http-errors";
 const dynamodb = new AWS.DynamoDB.DocumentClient();
 
 async function deleteNotiEmailById(event, context) {
-    const { id } = event.pathParameters;
+    const { id } = event.queryStringParameters;
 
     const params = {
       TableName: process.env.EMAILS_TABLE_NAME,
@@ -25,6 +25,10 @@ async function deleteNotiEmailById(event, context) {
     return {
         statusCode: 200,
         body: 'Eliminado correctamente',
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Credentials': true,
+        },
       };
 }
 

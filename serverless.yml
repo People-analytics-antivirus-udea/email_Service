@@ -27,13 +27,19 @@ functions:
       - http:
           method: POST
           path: /mail/
+          cors: true
 
   deleteNotiEmail:
     handler: src/handlers/deleteNotiEmailById.handler
     events:
       - http:
           method: DELETE
-          path: /mail/delete/{id}
+          path: /mail/delete/
+          cors: true
+          request:
+            parameters:
+              querystrings:
+                id: true
 
 
   changeNotiEmail:
@@ -42,13 +48,19 @@ functions:
       - http:
           method: PUT
           path: /mail/change/{id}
+          cors: true
 
   getNotiEmailByUni:
     handler: src/handlers/getNotiEmailByUni.handler
     events:
       - http:
           method: GET
-          path: /mail/list/{prefix_uni}
+          path: /mail/list/
+          cors: true
+          request:
+            parameters:
+              querystrings:
+                prefix_uni: true
 
 
 custom:
