@@ -16,6 +16,8 @@ Luego se instalan las dependencias necesarias y se ejecuta el proyecto con los s
 ```
 npm install
 sls deploy -v
+sls deploy --stage prod -v
 ```
+sls deploy por defecto generará unos endpoints en un entorno de desarrollo, y '--stage prod' lo hacen para un ambiente de producción
 
 La consola indicará los servicios creados junto con el endpoint.
