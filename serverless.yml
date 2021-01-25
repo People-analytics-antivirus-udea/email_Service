@@ -41,15 +41,6 @@ functions:
               querystrings:
                 id: true
 
-
-  changeNotiEmail:
-    handler: src/handlers/changeNotiEmail.handler
-    events:
-      - http:
-          method: PUT
-          path: /mail/change/{id}
-          cors: true
-
   getNotiEmailByUni:
     handler: src/handlers/getNotiEmailByUni.handler
     events:
